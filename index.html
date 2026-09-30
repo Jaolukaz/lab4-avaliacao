@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Avaliação Funcional | Lab-4 Performance</title>
+  <meta name="description" content="Avaliação funcional de atletas da Lab-4 Performance, com relatório A4 em PDF. Funciona offline.">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="light">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Lab-4">
+  <link rel="icon" type="image/png" href="icons/favicon-64.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img data-logo-white alt="Lab-4 Performance">
+      <div><div class="brand-t">Avaliação funcional</div><div class="brand-s desk-only">Lab-4 Performance</div><div class="save-m mob-only" data-save-state aria-hidden="true"></div></div>
+    </div>
+    <div class="seg desk-only" role="group" aria-label="Modo de exibição">
+      <button type="button" data-mode="form" aria-pressed="true">Formulário</button>
+      <button type="button" data-mode="preview" aria-pressed="false">Pré-visualização A4</button>
+    </div>
+    <span class="save-state desk-only" id="save-state" data-save-state aria-live="polite"></span>
+    <div class="actions desk-only">
+      <button type="button" class="btn btn-ghost" data-cmd="evals"><span class="ico" data-icon="list"></span>Avaliações</button>
+      <button type="button" class="btn btn-ghost" data-cmd="new"><span class="ico" data-icon="plus"></span>Nova</button>
+      <button type="button" class="btn btn-ghost" data-cmd="export" title="Baixar uma cópia desta avaliação (.json)"><span class="ico" data-icon="exp"></span>Exportar</button>
+      <button type="button" class="btn btn-ghost" data-cmd="import" title="Abrir uma avaliação exportada (.json)"><span class="ico" data-icon="imp"></span>Importar</button>
+      <button type="button" class="btn btn-ghost" data-cmd="install" hidden><span class="ico" data-icon="install"></span>Instalar</button>
+      <button type="button" class="btn btn-primary" data-cmd="pdf"><span class="ico" data-icon="pdf"></span>Gerar PDF</button>
+    </div>
+    <button type="button" class="icon-btn menu-btn mob-only" data-cmd="menu" aria-label="Abrir menu"><span class="ico" data-icon="menu"></span></button>
+  </header>
+
+  <nav class="strip mob-only" id="strip" aria-label="Seções"></nav>
+
+  <div class="install-banner" id="install-banner" role="region" aria-label="Instalar aplicativo" hidden>
+    <p id="install-text"></p>
+    <div class="ib-act">
+      <button type="button" class="btn btn-dark" id="install-go" hidden>Instalar</button>
+      <button type="button" class="icon-btn" id="install-close" aria-label="Fechar aviso"><span class="ico" data-icon="x"></span></button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="side"><nav aria-label="Seções da avaliação" id="side"></nav></aside>
+    <main class="form" id="form"></main>
+  </div>
+
+  <div id="report-wrap" aria-hidden="true">
+    <p class="preview-note">A pré-visualização mostra exatamente as páginas do PDF.</p>
+    <div class="ovf-msg" id="ovf-msg" hidden></div>
+    <div id="report"></div>
+  </div>
+
+  <nav class="bottombar mob-only" aria-label="Ações principais">
+    <div class="seg" role="group" aria-label="Modo de exibição">
+      <button type="button" data-mode="form" aria-pressed="true">Formulário</button>
+      <button type="button" data-mode="preview" aria-pressed="false">Prévia A4</button>
+    </div>
+    <button type="button" class="btn btn-primary" data-cmd="pdf"><span class="ico" data-icon="pdf"></span>Gerar PDF</button>
+  </nav>
+
+  <input type="file" id="import-file" accept=".json,application/json" hidden>
+
+  <dialog id="menu" class="sheet-dlg" aria-label="Menu">
+    <div class="menu-list">
+      <button type="button" data-cmd="evals"><span class="ico" data-icon="list"></span>Avaliações salvas</button>
+      <button type="button" data-cmd="new"><span class="ico" data-icon="plus"></span>Nova avaliação</button>
+      <button type="button" data-cmd="export"><span class="ico" data-icon="exp"></span>Exportar esta avaliação</button>
+      <button type="button" data-cmd="import"><span class="ico" data-icon="imp"></span>Importar avaliação</button>
+      <button type="button" data-cmd="install" hidden><span class="ico" data-icon="install"></span>Instalar o app</button>
+    </div>
+    <p class="menu-foot" id="app-version"></p>
+  </dialog>
+
+  <dialog id="evals" class="sheet-dlg" aria-labelledby="evals-h">
+    <h3 class="dlg-h" id="evals-h">Avaliações salvas</h3>
+    <div class="dlg-b">
+      <p class="hint" id="evals-count"></p>
+      <ul class="evals" id="evals-list"></ul>
+    </div>
+    <div class="dlg-a">
+      <button type="button" class="btn btn-line" data-cmd="close-evals">Fechar</button>
+      <button type="button" class="btn btn-dark" data-cmd="new"><span class="ico" data-icon="plus"></span>Nova avaliação</button>
+    </div>
+  </dialog>
+
+  <dialog id="dlg" class="sheet-dlg"><h3 class="dlg-h" id="dlg-h"></h3><div class="dlg-b" id="dlg-b"></div><div class="dlg-a" id="dlg-a"></div></dialog>
+
+  <div class="busy" id="busy" hidden><div class="busy-box"><span class="spinner" aria-hidden="true"></span><span id="busy-msg">Processando…</span></div></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

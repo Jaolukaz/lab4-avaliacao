@@ -6,7 +6,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { PDFDocument } from 'pdf-lib';
-import { layoutReport, PAGE, TOTAL_PAGES } from '../src/report/layout.js';
+import { layoutReport, PAGE, PHOTO_BOX_W, TOTAL_PAGES } from '../src/report/layout.js';
+import { PHOTO_MAX_DIM, PRINT_DPI } from '../src/core/config.js';
 import { renderPdf, A4_PT } from '../src/report/pdf.js';
 import { defaults } from '../src/core/model.js';
 import { loadAssets, ALL_PHOTOS } from './helpers.mjs';
@@ -67,4 +68,21 @@ test('fontes são embutidas em subconjunto (PDF leve para WhatsApp)', async () =
   const a = await loadAssets();
   const bytes = await renderPdf(layoutReport(sample(), { measure: a.measure, photos: {} }).pages, a);
   assert.ok(bytes.length < 250_000, `PDF sem fotos com ${bytes.length} bytes`);
+});
+
+test('resolução das fotos atinge a densidade de impressão no PDF', async () => {
+  // O quadro de evidência é limitado pela largura; a foto ocupa toda a largura útil.
+  const a = await loadAssets(ALL_PHOTOS);
+  const { pages } = layoutReport(sample(), { measure: a.measure, photos: photoFlags(ALL_PHOTOS) });
+  const boxes = pages.flatMap((p) => p.items).filter((it) => it.t === 'image' && /^photo:(agach|afundo|step)/.test(it.ref));
+  assert.ok(boxes.length > 0);
+  for (const b of boxes) assert.ok(Math.abs(b.w - PHOTO_BOX_W) < 0.01, 'quadro de foto com largura inesperada');
+  // Proporções mais comuns de câmeras de celular, na orientação retrato (pior caso de largura).
+  for (const [label, ratio] of [['3:4', 3 / 4], ['9:16', 9 / 16]]) {
+    const widthPx = PHOTO_MAX_DIM.default * ratio;
+    const dpi = widthPx / (PHOTO_BOX_W / 25.4);
+    assert.ok(dpi >= PRINT_DPI, `foto ${label} com ${dpi.toFixed(0)} dpi, abaixo de ${PRINT_DPI}`);
+  }
+  const athleteDpi = (PHOTO_MAX_DIM.atleta * 3 / 4) / (41.4 / 25.4);
+  assert.ok(athleteDpi >= PRINT_DPI, `foto do atleta com ${athleteDpi.toFixed(0)} dpi`);
 });

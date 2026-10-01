@@ -15,6 +15,8 @@ import { PT, baseline, clean, ellipsize, lh, wrap } from './text.js';
 
 export const TOTAL_PAGES = 6;
 export const PAGE = { w: 210, h: 297, x0: 13, cw: 184, top: 32.4, bottom: 283, footLine: 285, footBase: 291 };
+/** Largura útil (mm) de cada quadro de foto de evidência: dois quadros lado a lado, com moldura. */
+export const PHOTO_BOX_W = (PAGE.cw - 5) / 2 - 3.6;
 
 export const C = {
   black: '#000000', white: '#FFFFFF', ink: '#1E1E1E', text: '#2A2A2A', dim: '#4A4A4A', mid: '#555555',
@@ -194,7 +196,7 @@ class Layout {
       pg.rect(fx, y, fw, h + 9, C.white, { stroke: C.black, sw: 0.35 });
       const bx = fx + 1.8;
       const by = y + 1.8;
-      const bw = fw - 3.6;
+      const bw = PHOTO_BOX_W;
       pg.rect(bx, by, bw, h, C.photoBg);
       if (this.photos[k]) pg.image(`photo:${k}`, bx, by, bw, h, 'contain');
       else pg.text(bx + bw / 2, by + h / 2 + 1, 'Foto não anexada', 'b400', 8.5, C.ph, { anchor: 'middle' });

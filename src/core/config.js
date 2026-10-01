@@ -4,7 +4,7 @@
  * para que formulário, pré-visualização e PDF leiam da mesma fonte.
  */
 
-export const APP_VERSION = '2.0.1';
+export const APP_VERSION = '2.0.2';
 
 export const PHOTO_KEYS = ['atleta', 'agach1', 'agach2', 'afundo1', 'afundo2', 'step1', 'step2'];
 export const LIST_LIMIT = { historico: 8, ajustes: 10 };
@@ -13,9 +13,15 @@ export const OBS_MAX = 320;
 export const PERI_OBS_MAX = 200;
 export const CAPTION_MAX = 60;
 
-/** Dimensão máxima (px) das fotos após compressão no aparelho. */
-export const PHOTO_MAX_DIM = { atleta: 900, default: 1200 };
-export const PHOTO_JPEG_QUALITY = 0.82;
+/**
+ * Dimensão máxima (px, lado maior) das fotos gravadas no aparelho.
+ * 1920 px garante pelo menos 300 dpi no maior quadro de foto do PDF para fotos 3:4 e 9:16
+ * (verificado em tests/report.test.mjs). A foto do atleta ocupa um quadro menor.
+ */
+export const PHOTO_MAX_DIM = { atleta: 1200, default: 1920 };
+export const PHOTO_JPEG_QUALITY = 0.9;
+/** Densidade mínima de impressão que as fotos do relatório devem atingir. */
+export const PRINT_DPI = 300;
 
 export const DEFAULT_LABELS = { ok: 'Adequado', warn: 'Atenção', bad: 'Déficit' };
 export const OBJETIVOS = ['Performance', 'Prevenção de lesões', 'Retorno ao esporte', 'Reabilitação', 'Outro'];
